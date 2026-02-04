@@ -1,3 +1,5 @@
 opencv-python
 mediapipe
 pynput
+pygetwindow
+pyrect
