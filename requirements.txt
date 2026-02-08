@@ -1,0 +1,9 @@
+opencv-python
+mediapipe
+pynput
+pygetwindow
+pyrect
+fastapi
+uvicorn[standard]
+pytest
+httpx

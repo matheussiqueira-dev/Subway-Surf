@@ -1,0 +1,10 @@
+{
+  "name": "default",
+  "description": "Balanced profile for most players.",
+  "left_bound": 0.35,
+  "right_bound": 0.65,
+  "detection_confidence": 0.7,
+  "presence_confidence": 0.7,
+  "tracking_confidence": 0.6,
+  "cooldown_ms": 220
+}
