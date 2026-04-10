@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from src.domain.actions import Action, DISCRETE_ACTIONS
+from src.domain.actions import DISCRETE_ACTIONS, Action
 from src.infrastructure.keyboard_adapter import KeyboardAdapter
 
 try:
@@ -22,7 +22,7 @@ class GameController:
         self.window_title = window_title
         self.auto_focus_window = auto_focus_window
         self._last_lane_action = Action.CENTER
-        self._discrete_state = {action: False for action in DISCRETE_ACTIONS}
+        self._discrete_state = dict.fromkeys(DISCRETE_ACTIONS, False)
         self._logger = logging.getLogger(self.__class__.__name__)
         self._focus_attempted = False
 
@@ -61,4 +61,3 @@ class GameController:
                 self._logger.info("Focused game window '%s'.", self.window_title)
         except Exception as exc:  # pragma: no cover - OS specific behavior
             self._logger.warning("Could not focus game window: %s", exc)
-

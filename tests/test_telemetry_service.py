@@ -4,20 +4,21 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from src.domain.actions import Action
 from src.domain.models import TelemetrySnapshot
 from src.services.telemetry_service import TelemetryService
 
 
-def _snap(action: Action = Action.CENTER, fps: int = 30, profile: str = "default") -> TelemetrySnapshot:
+def _snap(
+    action: Action = Action.CENTER, fps: int = 30, profile: str = "default"
+) -> TelemetrySnapshot:
     return TelemetrySnapshot(action=action, fps=fps, has_hand=True, profile=profile, center_x=0.5)
 
 
 # ---------------------------------------------------------------------------
 # Basics
 # ---------------------------------------------------------------------------
+
 
 def test_latest_is_none_before_publish(telemetry_service: TelemetryService) -> None:
     assert telemetry_service.latest() is None
@@ -52,6 +53,7 @@ def test_history_returns_most_recent_entries(telemetry_service: TelemetryService
 # Persistence
 # ---------------------------------------------------------------------------
 
+
 def test_history_persists_to_disk(tmp_path: Path) -> None:
     svc = TelemetryService(telemetry_file=tmp_path / "t.json")
     svc.publish(_snap(Action.LEFT, fps=42))
@@ -66,6 +68,7 @@ def test_history_persists_to_disk(tmp_path: Path) -> None:
 # Max-history trimming
 # ---------------------------------------------------------------------------
 
+
 def test_max_history_caps_stored_entries(tmp_path: Path) -> None:
     svc = TelemetryService(telemetry_file=tmp_path / "t.json", max_history=5)
     for i in range(10):
@@ -79,6 +82,7 @@ def test_max_history_caps_stored_entries(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Corrupt file resilience
 # ---------------------------------------------------------------------------
+
 
 def test_corrupt_file_does_not_raise(tmp_path: Path) -> None:
     telemetry_file = tmp_path / "t.json"

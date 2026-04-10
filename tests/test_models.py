@@ -7,10 +7,10 @@ import pytest
 from src.domain.actions import Action, parse_action
 from src.domain.models import GestureSnapshot, Profile, TelemetrySnapshot
 
-
 # ---------------------------------------------------------------------------
 # Action / parse_action
 # ---------------------------------------------------------------------------
+
 
 class TestParseAction:
     def test_valid_uppercase(self) -> None:
@@ -32,6 +32,7 @@ class TestParseAction:
 # ---------------------------------------------------------------------------
 # Profile validation
 # ---------------------------------------------------------------------------
+
 
 class TestProfile:
     def test_valid_profile_passes(self) -> None:
@@ -85,6 +86,7 @@ class TestProfile:
 # GestureSnapshot
 # ---------------------------------------------------------------------------
 
+
 class TestGestureSnapshot:
     def test_default_values(self) -> None:
         snap = GestureSnapshot()
@@ -103,6 +105,7 @@ class TestGestureSnapshot:
 # ---------------------------------------------------------------------------
 # TelemetrySnapshot
 # ---------------------------------------------------------------------------
+
 
 class TestTelemetrySnapshot:
     def test_timestamp_is_iso_utc(self) -> None:

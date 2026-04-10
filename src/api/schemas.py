@@ -17,7 +17,7 @@ class ProfilePayload(BaseModel):
     cooldown_ms: int = Field(default=220, ge=80, le=1200)
 
     @model_validator(mode="after")
-    def _bounds_order(self) -> "ProfilePayload":
+    def _bounds_order(self) -> ProfilePayload:
         if self.left_bound >= self.right_bound:
             raise ValueError(
                 f"left_bound ({self.left_bound}) must be strictly less than "

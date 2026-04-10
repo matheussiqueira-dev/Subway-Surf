@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from src.domain.actions import Action
 from src.domain.models import GestureSnapshot
@@ -103,13 +104,14 @@ class GestureInterpreter:
 
     def _apply_ema(self, value: float) -> float:
         """Apply exponential moving average to stabilise the X position."""
-        if self._smoothed_center is None:
+        current = self._smoothed_center
+        if current is None:
             self._smoothed_center = value
             return value
-        self._smoothed_center = (
-            (1.0 - self.smoothing) * self._smoothed_center + self.smoothing * value
-        )
-        return self._smoothed_center
+        # Use local variable so mypy narrows the type to float, not float | None.
+        smoothed: float = (1.0 - self.smoothing) * current + self.smoothing * value
+        self._smoothed_center = smoothed
+        return smoothed
 
     @staticmethod
     def _weighted_center_x(hand: Sequence[Any]) -> float:
@@ -119,7 +121,7 @@ class GestureInterpreter:
         a stable estimate that is more robust to single-landmark noise than
         using the wrist alone.
         """
-        return hand[0].x * 0.4 + hand[INDEX_TIP].x * 0.3 + hand[THUMB_TIP].x * 0.3
+        return float(hand[0].x * 0.4 + hand[INDEX_TIP].x * 0.3 + hand[THUMB_TIP].x * 0.3)
 
     @staticmethod
     def _detect_fingers(hand: Sequence[Any]) -> list[bool]:

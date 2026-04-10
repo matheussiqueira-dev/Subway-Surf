@@ -15,7 +15,7 @@ import uvicorn
 
 from src.api.app import create_api_app, run_api_server
 from src.app.runner import VirtualControllerApp
-from src.utils.config import load_config
+from src.utils.config import AppConfig, load_config
 from src.utils.logger import configure_logging
 
 
@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _override_config(config, args: argparse.Namespace):
+def _override_config(config: AppConfig, args: argparse.Namespace) -> AppConfig:
     if args.camera_index is not None:
         config.camera_index = args.camera_index
     if args.disable_auto_focus:
@@ -56,7 +56,7 @@ def _override_config(config, args: argparse.Namespace):
     return config
 
 
-def _start_api_background(config) -> threading.Thread:
+def _start_api_background(config: AppConfig) -> threading.Thread:
     app = create_api_app(config=config)
     thread = threading.Thread(
         target=uvicorn.run,
@@ -98,4 +98,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

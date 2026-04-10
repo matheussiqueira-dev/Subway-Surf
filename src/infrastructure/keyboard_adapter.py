@@ -1,10 +1,23 @@
 from __future__ import annotations
 
 import time
-
-from pynput.keyboard import Controller, Key
+from typing import Any
 
 from src.domain.actions import Action
+
+# pynput requires a display server (X11/Wayland on Linux, or Windows/macOS).
+# In headless CI environments the import may succeed but Controller() fails.
+# Guard the import so modules that inject a mock keyboard can be collected
+# and run without a physical display.
+try:
+    from pynput.keyboard import Controller as _PynputController
+    from pynput.keyboard import Key as _PynputKey
+
+    _PYNPUT_AVAILABLE: bool = True
+except Exception:  # pragma: no cover
+    _PynputController = None
+    _PynputKey = None
+    _PYNPUT_AVAILABLE = False
 
 # Actions that are safe to emit as key-presses.
 _SENDABLE_ACTIONS: frozenset[Action] = frozenset(
@@ -17,10 +30,19 @@ class KeyboardAdapter:
 
     A per-action cooldown prevents key-repeat flooding and mirrors the
     game's built-in input debounce.
+
+    Raises RuntimeError on instantiation when pynput is unavailable
+    (headless environment). Tests should inject a mock keyboard instead
+    of creating a real KeyboardAdapter.
     """
 
     def __init__(self, key_map: dict[str, str], cooldown_ms: int) -> None:
-        self._keyboard = Controller()
+        if not _PYNPUT_AVAILABLE or _PynputController is None:  # pragma: no cover
+            raise RuntimeError(
+                "pynput is not available in this environment. "
+                "Install pynput or run with a display server."
+            )
+        self._keyboard: Any = _PynputController()
         self._key_map = key_map
         self._cooldown_ms = cooldown_ms
         self._last_sent: dict[Action, float] = {}
@@ -55,14 +77,16 @@ class KeyboardAdapter:
         return (time.perf_counter() - last) * 1000 >= self._cooldown_ms
 
     @staticmethod
-    def _token_to_key(token: str) -> Key | str | None:
+    def _token_to_key(token: str) -> Any:
         """Convert a string token to a pynput Key or single character."""
-        _special: dict[str, Key] = {
-            "up": Key.up,
-            "down": Key.down,
-            "left": Key.left,
-            "right": Key.right,
-            "space": Key.space,
+        if _PynputKey is None:  # pragma: no cover
+            return None
+        _special: dict[str, Any] = {
+            "up": _PynputKey.up,
+            "down": _PynputKey.down,
+            "left": _PynputKey.left,
+            "right": _PynputKey.right,
+            "space": _PynputKey.space,
         }
         if token in _special:
             return _special[token]

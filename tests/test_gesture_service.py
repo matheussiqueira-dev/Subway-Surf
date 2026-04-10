@@ -8,10 +8,10 @@ from src.domain.actions import Action
 from src.services.gesture_service import GestureInterpreter
 from tests.conftest import make_hand
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def interpreter() -> GestureInterpreter:
@@ -21,6 +21,7 @@ def interpreter() -> GestureInterpreter:
 # ---------------------------------------------------------------------------
 # Discrete gesture recognition
 # ---------------------------------------------------------------------------
+
 
 def test_all_fingers_extended_is_jump(interpreter: GestureInterpreter) -> None:
     snapshot = interpreter.interpret(make_hand([True, True, True, True, True]))
@@ -42,6 +43,7 @@ def test_index_and_middle_is_hoverboard(interpreter: GestureInterpreter) -> None
 # Lane detection
 # ---------------------------------------------------------------------------
 
+
 def test_hand_left_of_left_bound_is_lane_left(interpreter: GestureInterpreter) -> None:
     snapshot = interpreter.interpret(make_hand([False] * 5, center_x=0.20))
     assert snapshot.action == Action.LEFT
@@ -61,6 +63,7 @@ def test_hand_inside_bounds_is_center(interpreter: GestureInterpreter) -> None:
 # No-hand / idle path
 # ---------------------------------------------------------------------------
 
+
 def test_no_hand_returns_idle(interpreter: GestureInterpreter) -> None:
     snapshot = interpreter.interpret(None)
     assert snapshot.action == Action.IDLE
@@ -75,6 +78,7 @@ def test_empty_landmark_list_returns_idle(interpreter: GestureInterpreter) -> No
 # ---------------------------------------------------------------------------
 # Smoothing
 # ---------------------------------------------------------------------------
+
 
 def test_smoothing_zero_passes_raw_value() -> None:
     interp = GestureInterpreter(left_bound=0.35, right_bound=0.65, smoothing=0.0)
@@ -95,6 +99,7 @@ def test_smoothing_resets_on_hand_lost() -> None:
 # ---------------------------------------------------------------------------
 # Boundary validation
 # ---------------------------------------------------------------------------
+
 
 def test_invalid_bounds_raises() -> None:
     with pytest.raises(ValueError):

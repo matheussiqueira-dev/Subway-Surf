@@ -11,7 +11,7 @@ from src.domain.models import GestureSnapshot
 
 
 class HUD:
-    def __init__(self):
+    def __init__(self) -> None:
         self.font_title = cv2.FONT_HERSHEY_DUPLEX
         self.font_body = cv2.FONT_HERSHEY_SIMPLEX
         self._show_help = True
@@ -123,7 +123,9 @@ class HUD:
         outer_radius = int(5 + pulse * 3)
         for landmark in landmarks:
             x, y = int(landmark.x * w), int(landmark.y * h)
-            cv2.circle(image, (x, y), outer_radius, self.palette["accent_secondary"], 1, cv2.LINE_AA)
+            cv2.circle(
+                image, (x, y), outer_radius, self.palette["accent_secondary"], 1, cv2.LINE_AA
+            )
             cv2.circle(image, (x, y), 2, self.palette["text_main"], -1, cv2.LINE_AA)
 
     def _draw_header(
@@ -248,4 +250,3 @@ class HUD:
         if action == Action.HOVERBOARD:
             return self.palette["accent_secondary"]
         return self.palette["text_main"]
-

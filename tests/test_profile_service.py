@@ -7,10 +7,10 @@ import pytest
 from src.domain.models import Profile
 from src.services.profile_service import ProfileService
 
-
 # ---------------------------------------------------------------------------
 # Bootstrap
 # ---------------------------------------------------------------------------
+
 
 def test_bootstraps_default_profile(profile_service: ProfileService) -> None:
     active = profile_service.get_active_profile()
@@ -25,6 +25,7 @@ def test_default_profile_file_created(profile_service: ProfileService) -> None:
 # ---------------------------------------------------------------------------
 # CRUD
 # ---------------------------------------------------------------------------
+
 
 def test_save_and_retrieve_profile(profile_service: ProfileService) -> None:
     profile = Profile(
@@ -65,6 +66,7 @@ def test_get_active_profile_follows_activation(profile_service: ProfileService) 
 # Validation & error cases
 # ---------------------------------------------------------------------------
 
+
 def test_invalid_profile_name_raises(profile_service: ProfileService) -> None:
     with pytest.raises(ValueError):
         profile_service.get_profile("../unsafe")
@@ -84,6 +86,7 @@ def test_invalid_profile_data_raises_on_save(profile_service: ProfileService) ->
 # ---------------------------------------------------------------------------
 # Resilience
 # ---------------------------------------------------------------------------
+
 
 def test_list_profiles_skips_corrupt_files(profile_service: ProfileService) -> None:
     corrupt = profile_service.profiles_dir / "corrupt.json"

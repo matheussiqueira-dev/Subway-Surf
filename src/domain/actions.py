@@ -22,4 +22,3 @@ def parse_action(value: str | Action) -> Action:
         return Action(value.upper())
     except ValueError:
         return Action.IDLE
-

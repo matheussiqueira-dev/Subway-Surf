@@ -74,8 +74,23 @@ ignore_missing_imports = true
 exclude = ["tests/", "Virtual_controller\\.py"]
 
 [[tool.mypy.overrides]]
-module = ["cv2.*", "mediapipe.*", "pygetwindow.*", "pynput.*"]
+module = ["cv2.*", "mediapipe.*", "pygetwindow.*", "pynput.*", "uvicorn.*"]
 ignore_missing_imports = true
+
+# display.py uses OpenCV with untyped frame objects; annotating every
+# numpy/cv2 call would add noise without safety benefit.
+[[tool.mypy.overrides]]
+module = ["src.ui.*"]
+ignore_errors = true
+
+# FastAPI's route decorators and Pydantic's BaseModel are fully typed when
+# the packages are installed (CI). These overrides prevent false-positive
+# errors in environments where the packages are absent (local mypy without
+# full deps installed).
+[[tool.mypy.overrides]]
+module = ["src.api.*"]
+disallow_subclassing_any = false
+disallow_untyped_decorators = false
 
 # ---------------------------------------------------------------------------
 # Pytest

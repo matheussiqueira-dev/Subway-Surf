@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 from fastapi.testclient import TestClient
 
 from src.api.app import create_api_app
@@ -14,10 +13,10 @@ from src.services.profile_service import ProfileService
 from src.services.telemetry_service import TelemetryService
 from src.utils.config import load_config
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _build_client(
     tmp_path: Path,
@@ -37,14 +36,13 @@ def _build_client(
 
 
 def _snap(action: Action = Action.CENTER, fps: int = 30) -> TelemetrySnapshot:
-    return TelemetrySnapshot(
-        action=action, fps=fps, has_hand=True, profile="default", center_x=0.5
-    )
+    return TelemetrySnapshot(action=action, fps=fps, has_hand=True, profile="default", center_x=0.5)
 
 
 # ---------------------------------------------------------------------------
 # Health
 # ---------------------------------------------------------------------------
+
 
 def test_health_returns_ok(tmp_path: Path) -> None:
     client, _, _ = _build_client(tmp_path)
@@ -58,6 +56,7 @@ def test_health_returns_ok(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # Profile CRUD
 # ---------------------------------------------------------------------------
+
 
 def test_list_profiles_contains_default(tmp_path: Path) -> None:
     client, _, _ = _build_client(tmp_path)
@@ -92,7 +91,9 @@ def test_create_and_retrieve_profile(tmp_path: Path) -> None:
 
 def test_activate_profile(tmp_path: Path) -> None:
     client, _, _ = _build_client(tmp_path)
-    client.put("/v1/profiles/second", json={"description": "second", "left_bound": 0.3, "right_bound": 0.7})
+    client.put(
+        "/v1/profiles/second", json={"description": "second", "left_bound": 0.3, "right_bound": 0.7}
+    )
     act_resp = client.post("/v1/profiles/second/activate")
     assert act_resp.status_code == 200
     assert act_resp.json()["status"] == "activated"
@@ -125,6 +126,7 @@ def test_create_profile_with_equal_bounds_returns_422(tmp_path: Path) -> None:
 # Telemetry
 # ---------------------------------------------------------------------------
 
+
 def test_telemetry_returns_null_latest_when_empty(tmp_path: Path) -> None:
     client, _, _ = _build_client(tmp_path)
     response = client.get("/v1/telemetry")
@@ -146,6 +148,7 @@ def test_telemetry_returns_published_snapshot(tmp_path: Path) -> None:
 # ---------------------------------------------------------------------------
 # API key authentication
 # ---------------------------------------------------------------------------
+
 
 def test_protected_endpoint_without_key_returns_401(tmp_path: Path) -> None:
     client, _, _ = _build_client(tmp_path, api_key="secret123")

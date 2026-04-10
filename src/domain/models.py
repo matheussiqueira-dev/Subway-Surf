@@ -23,9 +23,7 @@ class Profile:
 
     def validate(self) -> None:
         if not PROFILE_NAME_PATTERN.match(self.name):
-            raise ValueError(
-                "Profile name must contain only letters, numbers, '_' or '-'."
-            )
+            raise ValueError("Profile name must contain only letters, numbers, '_' or '-'.")
         if not 0.05 <= self.left_bound < self.right_bound <= 0.95:
             raise ValueError("Lane boundaries must satisfy 0.05 <= left < right <= 0.95.")
         for label, value in (
@@ -51,7 +49,7 @@ class Profile:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Profile":
+    def from_dict(cls, data: dict[str, Any]) -> Profile:
         profile = cls(
             name=str(data["name"]),
             description=str(data.get("description", "Default profile")),
@@ -104,15 +102,13 @@ class TelemetrySnapshot:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "TelemetrySnapshot":
+    def from_dict(cls, data: dict[str, Any]) -> TelemetrySnapshot:
         return cls(
             action=parse_action(str(data.get("action", "IDLE"))),
             fps=int(data.get("fps", 0)),
             has_hand=bool(data.get("has_hand", False)),
             profile=str(data.get("profile", "default")),
             center_x=float(data.get("center_x", 0.5)),
-            timestamp=str(data.get("timestamp", "")) or datetime.now(timezone.utc).isoformat(
-                timespec="seconds"
-            ),
+            timestamp=str(data.get("timestamp", ""))
+            or datetime.now(timezone.utc).isoformat(timespec="seconds"),
         )
-

@@ -8,16 +8,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.domain.actions import Action
 from src.domain.models import Profile
 from src.services.profile_service import ProfileService
 from src.services.telemetry_service import TelemetryService
 from src.utils.config import load_config
 
-
 # ---------------------------------------------------------------------------
 # Lightweight hand-landmark stub
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class Landmark:
@@ -66,6 +65,7 @@ def make_hand(fingers: list[bool], center_x: float = 0.5) -> list[list[Landmark]
 # Service fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def profile_service(tmp_path: Path) -> ProfileService:
     return ProfileService(
@@ -92,6 +92,7 @@ def app_config(tmp_path: Path):
 # ---------------------------------------------------------------------------
 # Mock keyboard for GameController tests (no real key-presses)
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def mock_keyboard():

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
 import uvicorn
@@ -96,13 +95,9 @@ def create_api_app(
         try:
             profile = profiles.get_profile(name)
         except FileNotFoundError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         except ValueError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
         return profile.to_dict()
 
     @app.put(
@@ -126,9 +121,7 @@ def create_api_app(
             saved = profiles.save_profile(profile)
             return ProfileActionResponse(status="saved", profile=saved.to_dict())
         except ValueError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
     @app.post(
         "/v1/profiles/{name}/activate",
@@ -140,13 +133,9 @@ def create_api_app(
             profile = profiles.activate_profile(name)
             return ProfileActionResponse(status="activated", profile=profile.to_dict())
         except FileNotFoundError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
         except ValueError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
     @app.get("/v1/telemetry", dependencies=[Depends(guard)], response_model=TelemetryResponse)
     def get_telemetry(limit: int = 30) -> TelemetryResponse:

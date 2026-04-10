@@ -82,4 +82,3 @@ class ProfileService:
             return self.get_profile(active)
         except FileNotFoundError:
             return self.activate_profile("default")
-

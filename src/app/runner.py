@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
+from typing import Any
 
 import cv2
 
@@ -94,7 +95,7 @@ class VirtualControllerApp:
         self.detector.close()
         cv2.destroyAllWindows()
 
-    def _resolve_snapshot(self, detection_result) -> GestureSnapshot:
+    def _resolve_snapshot(self, detection_result: Any) -> GestureSnapshot:
         if detection_result and detection_result.hand_landmarks:
             return self.gesture.interpret(detection_result.hand_landmarks)
         return GestureSnapshot(action=Action.IDLE, has_hand=False)
@@ -153,4 +154,3 @@ class VirtualControllerApp:
             presence_confidence=profile.presence_confidence,
             tracking_confidence=profile.tracking_confidence,
         )
-

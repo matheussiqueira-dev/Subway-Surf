@@ -1,14 +1,13 @@
 """Domain models and enums."""
 
-from .actions import Action, DISCRETE_ACTIONS, LANE_ACTIONS
+from .actions import DISCRETE_ACTIONS, LANE_ACTIONS, Action
 from .models import GestureSnapshot, Profile, TelemetrySnapshot
 
 __all__ = [
-    "Action",
     "DISCRETE_ACTIONS",
     "LANE_ACTIONS",
+    "Action",
     "GestureSnapshot",
     "Profile",
     "TelemetrySnapshot",
 ]
-

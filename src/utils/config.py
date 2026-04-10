@@ -108,9 +108,7 @@ def load_config(project_root: Path | None = None) -> AppConfig:
         frame_height=_env_int("FRAME_HEIGHT", 480, min_value=240),
         left_bound=_env_float("LEFT_BOUND", 0.35, min_value=0.05, max_value=0.9),
         right_bound=_env_float("RIGHT_BOUND", 0.65, min_value=0.1, max_value=0.95),
-        detection_confidence=_env_float(
-            "DETECTION_CONFIDENCE", 0.7, min_value=0.1, max_value=1.0
-        ),
+        detection_confidence=_env_float("DETECTION_CONFIDENCE", 0.7, min_value=0.1, max_value=1.0),
         presence_confidence=_env_float("PRESENCE_CONFIDENCE", 0.7, min_value=0.1, max_value=1.0),
         tracking_confidence=_env_float("TRACKING_CONFIDENCE", 0.6, min_value=0.1, max_value=1.0),
         cooldown_ms=_env_int("ACTION_COOLDOWN_MS", 220, min_value=80),
@@ -144,4 +142,3 @@ def load_config(project_root: Path | None = None) -> AppConfig:
         config.left_bound, config.right_bound = 0.35, 0.65
     config.ensure_directories()
     return config
-
