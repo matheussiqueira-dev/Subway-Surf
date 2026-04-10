@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -8,7 +9,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
-from src.api.schemas import ProfilePayload, TelemetryResponse
+from src.api.schemas import (
+    HealthResponse,
+    ProfileActionResponse,
+    ProfileListResponse,
+    ProfilePayload,
+    TelemetryResponse,
+)
 from src.api.security import api_key_guard
 from src.domain.models import Profile
 from src.services.profile_service import ProfileService
@@ -28,7 +35,7 @@ def create_api_app(
 
     app = FastAPI(
         title="Subway Surf Motion Controller API",
-        version="3.0.0",
+        version="3.1.0",
         description=(
             "API para gestão de perfis, telemetria em tempo real e integração "
             "com dashboard do controlador por gestos."
@@ -57,26 +64,26 @@ def create_api_app(
             return RedirectResponse(url="/dashboard")
         return RedirectResponse(url="/docs")
 
-    @app.get("/v1/health")
-    def health_check():
-        return {"status": "ok", "service": "subway-surf-motion-api"}
+    @app.get("/v1/health", response_model=HealthResponse)
+    def health_check() -> HealthResponse:
+        return HealthResponse(status="ok", service="subway-surf-motion-api")
 
     @app.get("/v1/config", dependencies=[Depends(guard)])
-    def get_runtime_config():
-        data = cfg.to_public_dict()
+    def get_runtime_config() -> dict[str, Any]:
+        data: dict[str, Any] = cfg.to_public_dict()
         data["active_profile"] = profiles.get_active_profile_name()
         return data
 
-    @app.get("/v1/profiles", dependencies=[Depends(guard)])
-    def list_profiles():
+    @app.get("/v1/profiles", dependencies=[Depends(guard)], response_model=ProfileListResponse)
+    def list_profiles() -> dict[str, Any]:
         active = profiles.get_active_profile_name()
         return {
             "active": active,
-            "items": [profile.to_dict() for profile in profiles.list_profiles()],
+            "items": [p.to_dict() for p in profiles.list_profiles()],
         }
 
     @app.get("/v1/profiles/{name}", dependencies=[Depends(guard)])
-    def get_profile(name: str):
+    def get_profile(name: str) -> dict[str, Any]:
         try:
             profile = profiles.get_profile(name)
         except FileNotFoundError as exc:
@@ -89,8 +96,12 @@ def create_api_app(
             ) from exc
         return profile.to_dict()
 
-    @app.put("/v1/profiles/{name}", dependencies=[Depends(guard)])
-    def upsert_profile(name: str, payload: ProfilePayload):
+    @app.put(
+        "/v1/profiles/{name}",
+        dependencies=[Depends(guard)],
+        response_model=ProfileActionResponse,
+    )
+    def upsert_profile(name: str, payload: ProfilePayload) -> ProfileActionResponse:
         try:
             profile = Profile(
                 name=name,
@@ -104,17 +115,21 @@ def create_api_app(
             )
             profile.validate()
             saved = profiles.save_profile(profile)
-            return {"status": "saved", "profile": saved.to_dict()}
+            return ProfileActionResponse(status="saved", profile=saved.to_dict())
         except ValueError as exc:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
             ) from exc
 
-    @app.post("/v1/profiles/{name}/activate", dependencies=[Depends(guard)])
-    def activate_profile(name: str):
+    @app.post(
+        "/v1/profiles/{name}/activate",
+        dependencies=[Depends(guard)],
+        response_model=ProfileActionResponse,
+    )
+    def activate_profile(name: str) -> ProfileActionResponse:
         try:
             profile = profiles.activate_profile(name)
-            return {"status": "activated", "profile": profile.to_dict()}
+            return ProfileActionResponse(status="activated", profile=profile.to_dict())
         except FileNotFoundError as exc:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
@@ -125,7 +140,7 @@ def create_api_app(
             ) from exc
 
     @app.get("/v1/telemetry", dependencies=[Depends(guard)], response_model=TelemetryResponse)
-    def get_telemetry(limit: int = 30):
+    def get_telemetry(limit: int = 30) -> TelemetryResponse:
         latest = telemetry.latest()
         return TelemetryResponse(
             latest=latest.to_dict() if latest else None,
@@ -137,9 +152,13 @@ def create_api_app(
 
 def run_api_server(config: AppConfig) -> None:
     app = create_api_app(config=config)
-    uvicorn.run(app, host=config.api_host, port=config.api_port, log_level=config.log_level.lower())
+    uvicorn.run(
+        app,
+        host=config.api_host,
+        port=config.api_port,
+        log_level=config.log_level.lower(),
+    )
 
 
 if __name__ == "__main__":
     run_api_server(load_config())
-
