@@ -7,7 +7,7 @@ from src.infrastructure.keyboard_adapter import KeyboardAdapter
 
 try:
     import pygetwindow as gw
-except ImportError:  # pragma: no cover - optional runtime dependency
+except Exception:  # pragma: no cover - unavailable on Linux/headless CI
     gw = None
 
 

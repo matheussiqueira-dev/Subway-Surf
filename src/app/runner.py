@@ -53,7 +53,7 @@ class VirtualControllerApp:
         try:
             while self.camera.is_opened():
                 success, frame = self.camera.read()
-                if not success:
+                if not success or frame is None:
                     read_failures += 1
                     if read_failures > 30:
                         raise RuntimeError("Camera read failed for too long.")
