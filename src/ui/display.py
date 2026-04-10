@@ -79,15 +79,16 @@ class HUD:
         cv2.waitKey(850)
 
     def _draw_atmosphere(self, image, w: int, h: int) -> None:
-        # Soft gradient and top accent stripe to improve visual hierarchy.
-        for y in range(h):
-            blend = y / max(h - 1, 1)
-            color = (
-                int(self.palette["bg_dark"][0] * (1 - blend) + self.palette["bg_soft"][0] * blend),
-                int(self.palette["bg_dark"][1] * (1 - blend) + self.palette["bg_soft"][1] * blend),
-                int(self.palette["bg_dark"][2] * (1 - blend) + self.palette["bg_soft"][2] * blend),
-            )
-            cv2.line(image, (0, y), (w, y), color, 1)
+        # Vectorised vertical gradient — O(1) NumPy ops instead of O(h) cv2.line calls.
+        dark = np.array(self.palette["bg_dark"], dtype=np.float32)
+        soft = np.array(self.palette["bg_soft"], dtype=np.float32)
+        blend = np.linspace(0.0, 1.0, h, dtype=np.float32)  # shape (h,)
+        # Broadcast: (h, 1, 3) so each row gets its own interpolated colour.
+        gradient = (dark * (1.0 - blend[:, None, None]) + soft * blend[:, None, None]).astype(
+            np.uint8
+        )
+        # Tile the single-pixel-wide gradient to full frame width.
+        image[:, :] = np.broadcast_to(gradient, (h, w, 3)).copy()
 
         cv2.rectangle(image, (0, 0), (w, 8), self.palette["accent_secondary"], -1)
 
