@@ -1,214 +1,237 @@
-# Subway Surf Motion Controller v3.0
+# Subway Surf Motion Controller
 
-Controlador por gestos para Subway Surfers com arquitetura profissional, API REST, dashboard web, perfis de calibração e telemetria em tempo real.
+[![CI](https://github.com/matheussiqueira-dev/Subway-Surf/actions/workflows/ci.yml/badge.svg)](https://github.com/matheussiqueira-dev/Subway-Surf/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue)](https://www.python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 1) Visão Geral
+Controlador por gestos para Subway Surfers usando visão computacional (MediaPipe + OpenCV), com API REST, dashboard web, perfis de calibração e telemetria em tempo real.
 
-Este projeto transforma movimentos da mão em comandos de teclado para jogos de corrida (foco: Subway Surfers), usando visão computacional com MediaPipe.
+---
 
-### Problema que resolve
-- Reduz dependência de teclado/mouse para ações repetitivas.
-- Permite calibrar sensibilidade por ambiente (luz, câmera, distância).
-- Oferece monitoramento operacional (FPS, ação ativa, presença de mão, perfil).
+## Sumário
 
-### Público-alvo
-- Jogadores que querem controle gestual.
-- Desenvolvedores que estudam HCI (Human-Computer Interaction).
-- Times de produto/engenharia que precisam de base extensível para visão em tempo real.
+1. [Visão Geral](#1-visão-geral)
+2. [Arquitetura](#2-arquitetura)
+3. [Instalação](#3-instalação)
+4. [Executando](#4-executando)
+5. [Configuração (Variáveis de Ambiente)](#5-configuração)
+6. [API REST](#6-api-rest)
+7. [Testes](#7-testes)
+8. [Gestos Suportados](#8-gestos-suportados)
+9. [Stack Tecnológica](#9-stack-tecnológica)
+10. [Melhorias Futuras](#10-melhorias-futuras)
 
-## 2) Arquitetura e Decisões Técnicas
+---
 
-O sistema foi refatorado para separar domínio, aplicação, infraestrutura e apresentação.
+## 1. Visão Geral
 
-### Camadas
-- `domain`: entidades centrais (`Action`, `Profile`, `TelemetrySnapshot`).
-- `services`: regras de negócio (interpretação de gesto, gestão de perfis, telemetria).
-- `core`: detecção de mão e orquestração de comandos de jogo.
-- `infrastructure`: adaptadores de câmera e teclado.
-- `ui`: HUD OpenCV focada em legibilidade e feedback em tempo real.
-- `api`: backend FastAPI para integração externa e dashboard.
+O projeto transforma movimentos da mão em comandos de teclado para jogos de corrida, com foco em Subway Surfers.
 
-### Princípios aplicados
-- `SOLID`: responsabilidade única por módulo e dependências explícitas.
-- `DRY`: regras de gesto e validações centralizadas.
-- `Clean Architecture`: domínio independente de framework/UI.
+**O que ele resolve:**
+- Elimina a dependência de teclado/mouse para ações repetitivas durante o jogo.
+- Permite calibrar sensibilidade por ambiente (iluminação, câmera, distância).
+- Oferece monitoramento operacional em tempo real: FPS, ação ativa, perfil.
 
-## 3) Frontend + UX/UI
+**Público-alvo:** jogadores, desenvolvedores de HCI e times de produto que precisam de uma base extensível para visão computacional em tempo real.
 
-Foram implementadas duas experiências:
+---
 
-- HUD OpenCV (tempo real):
-  - hierarquia visual mais clara (header, zonas de pista, legenda, status);
-  - contraste e feedback de estado por ação;
-  - comandos contextuais (`Q`, `P`, `H`) para operação sem interrupção.
+## 2. Arquitetura
 
-- Dashboard Web (`/dashboard`):
-  - visual moderno com design tokens e responsividade;
-  - monitoramento de telemetria e sparkline de FPS;
-  - CRUD de perfis com ativação imediata.
+O projeto segue **Clean Architecture** com separação estrita entre camadas:
 
-## 4) Backend, Segurança e Confiabilidade
-
-Backend em FastAPI com:
-- versionamento de endpoints (`/v1`);
-- contratos validados via Pydantic;
-- CORS configurável por ambiente;
-- autenticação opcional por `x-api-key`;
-- validação forte de perfil (nome seguro, ranges e limites);
-- telemetria persistida em `runtime/telemetry.json`.
-
-## 5) APIs, Dados e Integrações
-
-### Endpoints principais
-- `GET /v1/health`
-- `GET /v1/config`
-- `GET /v1/profiles`
-- `GET /v1/profiles/{name}`
-- `PUT /v1/profiles/{name}`
-- `POST /v1/profiles/{name}/activate`
-- `GET /v1/telemetry?limit=30`
-
-### Persistência
-- Perfis JSON versionáveis em `profiles/*.json`.
-- Perfil ativo em `runtime/active_profile.txt`.
-- Histórico de telemetria em `runtime/telemetry.json` (janela deslizante).
-
-## 6) Novas Features Implementadas
-
-- API REST para gestão de perfis e telemetria.
-- Dashboard web para observabilidade e configuração.
-- Perfis de calibração com troca dinâmica em runtime (`P` no controlador).
-- CLI com modos operacionais:
-  - `controller`
-  - `api`
-  - `all` (API + controlador).
-- Logging estruturado com rotação em `runtime/logs`.
-
-## 7) Qualidade e Boas Práticas
-
-Testes automatizados cobrindo:
-- interpretação de gestos (`tests/test_gesture_service.py`);
-- serviço de perfis (`tests/test_profile_service.py`);
-- contratos da API (`tests/test_api.py`).
-
-Execução local dos testes:
-
-```bash
-python -m pytest
+```
+src/
+├── domain/          # Entidades e regras de negócio puras (Action, Profile, Snapshots)
+├── services/        # Casos de uso (GestureInterpreter, ProfileService, TelemetryService)
+├── core/            # Orquestração de baixo nível (HandDetector, GameController)
+├── infrastructure/  # Adaptadores externos (CameraStream, KeyboardAdapter)
+├── ui/              # HUD OpenCV (Display)
+├── api/             # Backend FastAPI (rotas, schemas, segurança)
+├── app/             # Runner principal (VirtualControllerApp)
+├── ports.py         # Interfaces Protocol para inversão de dependência
+└── utils/           # Config, Logger
 ```
 
-## 8) Stack Tecnológica
+**Princípios aplicados:**
+- **SOLID** — responsabilidade única por módulo, dependências explícitas via injeção.
+- **Protocol interfaces** — `CameraPort`, `DetectorPort`, `KeyboardPort`, `GestureInterpreterPort` permitem trocar implementações sem alterar o domínio.
+- **Imutabilidade de config** — `AppConfig` é criado uma vez via `load_config()` e sobrescrito apenas em bootstrap.
 
-- Python 3.10+
-- OpenCV
-- MediaPipe Tasks
-- FastAPI
-- Uvicorn
-- Pydantic
-- PyNput
-- PyGetWindow
-- Pytest
+### Fluxo de execução (modo `controller`)
 
-## 9) Estrutura do Projeto
-
-```text
-Subway-Surf-main/
-├── dashboard/
-│   ├── index.html
-│   ├── styles.css
-│   └── app.js
-├── profiles/
-│   └── default.json
-├── runtime/
-├── src/
-│   ├── api/
-│   │   ├── app.py
-│   │   ├── schemas.py
-│   │   └── security.py
-│   ├── app/
-│   │   └── runner.py
-│   ├── core/
-│   │   ├── controller.py
-│   │   └── detector.py
-│   ├── domain/
-│   │   ├── actions.py
-│   │   └── models.py
-│   ├── infrastructure/
-│   │   ├── camera.py
-│   │   └── keyboard_adapter.py
-│   ├── services/
-│   │   ├── gesture_service.py
-│   │   ├── profile_service.py
-│   │   └── telemetry_service.py
-│   ├── ui/
-│   │   └── display.py
-│   └── utils/
-│       ├── config.py
-│       └── logger.py
-├── tests/
-├── main.py
-└── requirements.txt
+```
+Webcam → CameraStream.read()
+       → cv2.flip + cvtColor(BGR→RGB)
+       → HandDetector.detect()        (MediaPipe VIDEO mode)
+       → GestureInterpreter.interpret()
+       → GameController.perform_action()
+       → KeyboardAdapter.send()       (pynput key press/release)
+       → HUD.draw()                   (OpenCV overlay)
+       → TelemetryService.publish()   (async-safe, in-memory + JSON)
 ```
 
-## 10) Instalação, Execução e Deploy
+---
 
-### Instalação
+## 3. Instalação
 
 ```bash
 git clone https://github.com/matheussiqueira-dev/Subway-Surf.git
-cd Subway-Surf-main
-python -m pip install -r requirements.txt
+cd Subway-Surf
+
+# Produção
+pip install -r requirements.txt
+
+# Desenvolvimento (inclui ruff, mypy, pytest-cov, pre-commit)
+pip install -r requirements-dev.txt
+pre-commit install
 ```
 
-### Executar controlador (desktop)
+Copie o template de variáveis de ambiente:
 
 ```bash
+cp .env.example .env
+```
+
+---
+
+## 4. Executando
+
+### Via Makefile (recomendado)
+
+```bash
+make run        # Somente o controlador gestual
+make run-api    # Somente API + dashboard
+make run-all    # API em background + controlador
+```
+
+### Via CLI diretamente
+
+```bash
+# Controlador (requer câmera)
 python main.py --mode controller
-```
 
-### Executar API + dashboard
-
-```bash
+# Apenas API + dashboard
 python main.py --mode api --api-host 127.0.0.1 --api-port 8000
+
+# Ambos simultaneamente
+python main.py --mode all
+
+# Ativar um perfil específico na inicialização
+python main.py --mode controller --profile competitive
+
+# Outras opções
+python main.py --help
 ```
 
-Dashboard:
-- `http://127.0.0.1:8000/dashboard`
-- Swagger/OpenAPI: `http://127.0.0.1:8000/docs`
+### Dashboard e Docs
 
-### Executar tudo junto
+| URL | Descrição |
+|-----|-----------|
+| `http://127.0.0.1:8000/dashboard` | Dashboard web |
+| `http://127.0.0.1:8000/docs` | Swagger UI |
+| `http://127.0.0.1:8000/redoc` | ReDoc |
+
+### Controles do HUD OpenCV
+
+| Tecla | Ação |
+|-------|------|
+| `Q` | Encerrar o controlador |
+| `P` | Ciclar para o próximo perfil |
+| `H` | Mostrar/ocultar legenda de gestos |
+
+---
+
+## 5. Configuração
+
+Todas as variáveis têm valores padrão funcionais. Veja `.env.example` para descrições completas.
+
+| Variável | Padrão | Descrição |
+|----------|--------|-----------|
+| `CAMERA_INDEX` | `0` | Índice do dispositivo OpenCV |
+| `FRAME_WIDTH` / `FRAME_HEIGHT` | `640` / `480` | Resolução de captura |
+| `LEFT_BOUND` / `RIGHT_BOUND` | `0.35` / `0.65` | Divisão das faixas X normalizadas |
+| `DETECTION_CONFIDENCE` | `0.70` | Threshold de detecção MediaPipe |
+| `ACTION_COOLDOWN_MS` | `220` | Intervalo mínimo entre key-presses |
+| `API_HOST` / `API_PORT` | `127.0.0.1` / `8000` | Endereço da API |
+| `API_KEY` | _(vazio)_ | Chave para `x-api-key` (desativa auth se vazio) |
+| `API_ALLOW_ORIGINS` | `*` | CORS — separar por vírgula |
+| `LOG_LEVEL` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
+
+---
+
+## 6. API REST
+
+Todos os endpoints protegidos requerem o header `x-api-key` quando `API_KEY` está configurado.
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/v1/health` | Status do serviço |
+| `GET` | `/v1/config` | Configuração pública em runtime |
+| `GET` | `/v1/profiles` | Lista todos os perfis |
+| `GET` | `/v1/profiles/{name}` | Detalhes de um perfil |
+| `PUT` | `/v1/profiles/{name}` | Criar ou atualizar perfil |
+| `POST` | `/v1/profiles/{name}/activate` | Ativar perfil |
+| `GET` | `/v1/telemetry?limit=30` | Telemetria recente |
+
+---
+
+## 7. Testes
 
 ```bash
-python main.py --mode all
+# Roda a suite completa
+make test
+
+# Com cobertura HTML
+make test-cov
+
+# Verificação de lint e formatação
+make lint
+
+# Type-check (mypy strict)
+make type-check
 ```
 
-### Deploy recomendado (API)
-- Executar com Uvicorn/Gunicorn atrás de Nginx.
-- Definir `API_KEY` e `API_ALLOW_ORIGINS`.
-- Isolar `runtime/` e `profiles/` em volume persistente.
+Cobertura atual inclui: `GestureInterpreter`, `GameController`, `TelemetryService`, `ProfileService`, domain models, `AppConfig` e contratos da API REST.
 
-## 11) Variáveis de Ambiente
+---
 
-- `CAMERA_INDEX` (padrão `0`)
-- `CAMERA_NAME` (padrão `BRIO`)
-- `LEFT_BOUND` / `RIGHT_BOUND`
-- `DETECTION_CONFIDENCE`
-- `PRESENCE_CONFIDENCE`
-- `TRACKING_CONFIDENCE`
-- `ACTION_COOLDOWN_MS`
-- `AUTO_FOCUS_WINDOW`
-- `API_HOST` / `API_PORT`
-- `API_KEY`
-- `API_ALLOW_ORIGINS`
-- `LOG_LEVEL`
+## 8. Gestos Suportados
 
-## 12) Melhorias Futuras
+| Gesto | Ação | Tecla |
+|-------|------|-------|
+| Mão aberta (todos os dedos) | Pular | `↑` |
+| Polegar + mínimo | Rolar | `↓` |
+| Indicador + médio | Hoverboard | `Espaço` |
+| Mão à esquerda de `LEFT_BOUND` | Mover esquerda | `←` |
+| Mão à direita de `RIGHT_BOUND` | Mover direita | `→` |
 
-- Persistência em banco SQL (PostgreSQL) para analytics de sessões.
-- Modelo de gesture classification treinado para maior precisão.
-- WebSocket para telemetria live sem polling.
-- Perfil por usuário com autenticação JWT e RBAC.
-- Pipeline CI/CD com quality gates (lint, test, security scan).
+---
 
-Autoria: Matheus Siqueira  
-Website: https://www.matheussiqueira.dev/
+## 9. Stack Tecnológica
+
+| Componente | Tecnologia |
+|------------|-----------|
+| Visão computacional | OpenCV 4.10+, MediaPipe 0.10+ |
+| API & validação | FastAPI 0.115+, Pydantic 2.10+ |
+| Servidor ASGI | Uvicorn |
+| Entrada de teclado | pynput |
+| Foco de janela | pygetwindow |
+| Testes | pytest, pytest-cov, httpx |
+| Linting / Formatação | ruff |
+| Type checking | mypy (strict) |
+| CI | GitHub Actions |
+
+---
+
+## 10. Melhorias Futuras
+
+- WebSocket para telemetria live (eliminar polling do dashboard).
+- Modelo de gesture classification treinado (maior precisão em cenários adversos).
+- Persistência em banco SQL para analytics de sessões longas.
+- Suporte a múltiplas mãos e gestos bimanais.
+- Perfil por usuário com autenticação JWT.
+
+---
+
+Autoria: [Matheus Siqueira](https://www.matheussiqueira.dev/)
