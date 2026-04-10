@@ -5,6 +5,12 @@ description = "Gesture-based virtual controller for Subway Surfers using MediaPi
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
+authors = [
+    { name = "Matheus Siqueira", email = "contato@matheussiqueira.dev" },
+]
+maintainers = [
+    { name = "Matheus Siqueira", email = "contato@matheussiqueira.dev" },
+]
 keywords = ["mediapipe", "opencv", "computer-vision", "game-controller", "gesture-recognition"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -17,6 +23,11 @@ classifiers = [
     "Topic :: Games/Entertainment",
     "Topic :: Scientific/Engineering :: Image Recognition",
 ]
+
+[project.urls]
+Homepage = "https://www.matheussiqueira.dev/"
+Repository = "https://github.com/matheussiqueira-dev/Subway-Surf"
+"Bug Tracker" = "https://github.com/matheussiqueira-dev/Subway-Surf/issues"
 
 [project.scripts]
 subway-surf = "main:main"

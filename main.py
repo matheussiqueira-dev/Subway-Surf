@@ -1,3 +1,10 @@
+"""Subway Surf Motion Controller — entry point.
+
+Developed by Matheus Siqueira <https://www.matheussiqueira.dev/>
+Repository: https://github.com/matheussiqueira-dev/Subway-Surf
+License: MIT
+"""
+
 from __future__ import annotations
 
 import argparse

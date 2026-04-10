@@ -38,8 +38,17 @@ def create_api_app(
         version="3.1.0",
         description=(
             "API para gestão de perfis, telemetria em tempo real e integração "
-            "com dashboard do controlador por gestos."
+            "com dashboard do controlador por gestos.\n\n"
+            "Desenvolvido por **[Matheus Siqueira](https://www.matheussiqueira.dev/)**."
         ),
+        contact={
+            "name": "Matheus Siqueira",
+            "url": "https://www.matheussiqueira.dev/",
+        },
+        license_info={
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT",
+        },
     )
 
     app.add_middleware(

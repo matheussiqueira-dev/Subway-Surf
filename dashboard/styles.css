@@ -360,3 +360,24 @@ label {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+.app-footer {
+  text-align: center;
+  padding: 24px 0 32px;
+  color: var(--text-subtle);
+  font-size: 0.82rem;
+}
+
+.app-footer a {
+  color: var(--accent-b);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: var(--accent-a);
+}

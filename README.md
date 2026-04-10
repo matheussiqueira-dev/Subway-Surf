@@ -234,4 +234,11 @@ Cobertura atual inclui: `GestureInterpreter`, `GameController`, `TelemetryServic
 
 ---
 
-Autoria: [Matheus Siqueira](https://www.matheussiqueira.dev/)
+## Créditos
+
+Desenvolvido por **[Matheus Siqueira](https://www.matheussiqueira.dev/)** — Engenheiro de Software especializado em visão computacional, automação e desenvolvimento fullstack.
+
+- Website: [matheussiqueira.dev](https://www.matheussiqueira.dev/)
+- GitHub: [@matheussiqueira-dev](https://github.com/matheussiqueira-dev)
+
+> Sinta-se livre para abrir issues ou contribuir com pull requests.
