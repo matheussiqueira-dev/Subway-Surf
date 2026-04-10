@@ -102,7 +102,20 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 source = ["src"]
-omit = ["src/ui/*"]
+omit = [
+    # Requires display server / OpenCV window — not unit-testable in CI
+    "src/ui/*",
+    # Requires physical camera hardware
+    "src/infrastructure/camera.py",
+    # Requires MediaPipe model file and GPU/CPU inference
+    "src/core/detector.py",
+    # Orchestrates camera + detector + display — integration only
+    "src/app/runner.py",
+    # Protocol definitions — no executable statements to cover
+    "src/ports.py",
+    # Logging setup — file handlers / formatters, no logic to assert
+    "src/utils/logger.py",
+]
 
 [tool.coverage.report]
 show_missing = true
