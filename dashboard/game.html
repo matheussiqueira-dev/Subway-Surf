@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subway Surf Vision Runner</title>
+  <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+  <main class="game-shell">
+    <canvas id="gameCanvas" tabindex="0" aria-label="Subway Surf Vision Runner"></canvas>
+
+    <section class="hud" aria-label="Painel do jogo">
+      <div class="brand">
+        <strong>Subway Surf Vision Runner</strong>
+        <span>Matheus Siqueira - www.matheussiqueira.dev</span>
+      </div>
+      <div class="stats" aria-live="polite">
+        <span id="scoreValue">000000</span>
+        <span id="coinValue">0</span>
+        <span id="lifeValue">3</span>
+      </div>
+      <a class="hub-link" href="./">Hub</a>
+    </section>
+
+    <section class="touch-controls" aria-label="Controles">
+      <button type="button" data-action="left" aria-label="Esquerda">&#8592;</button>
+      <button type="button" data-action="jump" aria-label="Pular">&#8593;</button>
+      <button type="button" data-action="slide" aria-label="Rolar">&#8595;</button>
+      <button type="button" data-action="right" aria-label="Direita">&#8594;</button>
+      <button type="button" data-action="hoverboard" aria-label="Hoverboard">&#9671;</button>
+    </section>
+
+    <section id="startOverlay" class="start-overlay">
+      <div class="start-panel">
+        <p class="kicker">Computer Vision Runner</p>
+        <h1>Subway Surf Vision Runner</h1>
+        <button id="startBtn" type="button">Jogar</button>
+        <label class="bridge-toggle">
+          <input id="gestureBridge" type="checkbox" checked>
+          <span>Usar telemetria dos gestos</span>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <script src="./game.js"></script>
+</body>
+</html>

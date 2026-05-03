@@ -131,6 +131,18 @@ button:hover {
   transform: translateY(-1px);
 }
 
+.play-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  border-radius: 10px;
+  padding: 0 14px;
+  color: #041016;
+  background: var(--accent-b);
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(130px, 1fr));

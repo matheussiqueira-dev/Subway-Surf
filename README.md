@@ -128,9 +128,46 @@ python main.py --help
 
 | URL | Descrição |
 |-----|-----------|
+| `http://127.0.0.1:8000/dashboard/game.html` | Jogo web jogável integrado ao controlador |
 | `http://127.0.0.1:8000/dashboard` | Dashboard web |
 | `http://127.0.0.1:8000/docs` | Swagger UI |
 | `http://127.0.0.1:8000/redoc` | ReDoc |
+
+### Jogo web integrado
+
+O dashboard agora inclui um runner jogável em canvas, sem depender do Unity instalado:
+
+```bash
+python main.py --mode api --api-host 127.0.0.1 --api-port 8000
+```
+
+Abra `http://127.0.0.1:8000/dashboard/game.html`.
+
+Controles:
+
+| Tecla | Ação |
+|-------|------|
+| `A` / `←` | Mover esquerda |
+| `D` / `→` | Mover direita |
+| `W` / `↑` | Pular |
+| `S` / `↓` | Rolar |
+| `Espaço` / `H` | Hoverboard |
+| `R` | Reiniciar após game over |
+
+Quando o controlador por webcam está rodando, a página pode consumir a telemetria de gestos
+e converter `LEFT`, `RIGHT`, `JUMP`, `SLIDE` e `HOVERBOARD` em comandos do jogo.
+
+### Projeto Unity reconstruído
+
+Além do jogo web, este repositório inclui `UnityGame/`, um projeto Unity 2022.3 LTS com uma
+cena jogável reconstruída em `UnityGame/Assets/Scenes/Main.unity`.
+
+Para gerar um build Windows quando o Unity estiver instalado:
+
+```powershell
+cd UnityGame
+.\build_unity_windows.ps1
+```
 
 ### Controles do HUD OpenCV
 

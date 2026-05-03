@@ -67,3 +67,26 @@ runtime/*.txt
 # Logs
 # ---------------------------------------------------------------------------
 *.log
+
+# ---------------------------------------------------------------------------
+# Unity project artefacts
+# ---------------------------------------------------------------------------
+UnityGame/[Ll]ibrary/
+UnityGame/[Tt]emp/
+UnityGame/[Oo]bj/
+UnityGame/[Bb]uild/
+UnityGame/[Bb]uilds/
+UnityGame/[Ll]ogs/
+UnityGame/[Uu]ser[Ss]ettings/
+UnityGame/.vs/
+UnityGame/*.csproj
+UnityGame/*.sln
+UnityGame/*.user
+UnityGame/*.userprefs
+UnityGame/*.pidb
+UnityGame/*.booproj
+UnityGame/*.svd
+UnityGame/*.pdb
+UnityGame/*.mdb
+UnityGame/*.opendb
+UnityGame/*.VC.db
